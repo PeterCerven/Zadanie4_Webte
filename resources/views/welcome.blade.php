@@ -11,6 +11,11 @@
 </head>
 <body>
 <div>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">Home</a>
+        </div>
+    </nav>
     <header class="container">
         <h1>Weather APP</h1>
     </header>
@@ -63,8 +68,9 @@
                             inputmode="numeric"
                             id="cityName"
                             placeholder="City"
-                            aria-label="latitude"
+                            aria-label="city"
                             aria-describedby="basic-addon1"
+                            name ="cityName"
                             value="London"
                         />
                     </div>
@@ -74,9 +80,9 @@
                 </form>
             </div>
             <div class="col">
-                <form action="">
+                <form method="POST" action="/current">
                     @csrf
-                    <button id="btnCurrent" type="button" class="btn btn-primary mb-3">
+                    <button id="btnCurrent" type="submit" class="btn btn-primary mb-3">
                         Use Current Location
                     </button>
                 </form>
@@ -85,115 +91,89 @@
 
     </nav>
     <main class="container">
-        <div class="weather row d-flex align-items-stretch">
+        <div class="weather row">
             @unless($locationWeather == null)
-                <div class="col-6">
-                    <div class="row">
-                        <div id="weather" class="col-6">
-                            <div class="card">
-                                <h5 class="card-title p-2">{{$locationWeather->time}}</h5>
-                                <img
-                                    src="{{$locationWeather->weather_image}}"
-                                    class="card-img-top"
-                                    alt="{{$locationWeather->weather_name}}"
-                                />
-                                <div class="card-body">
-                                    <h3 class="card-title">{{$locationWeather->weather_name}}</h3>
-                                    <p class="card-text">Temperature: {{$locationWeather->temperature}}&deg;C</p>
-                                    <p class="card-text">Humidity: {{$locationWeather->humidity}}%</p>
-                                </div>
-                            </div>
+                <div class="col-6 col-md-3">
+                    <div id="weather" class="card h-100">
+                        <h5 class="card-title p-2">{{$locationWeather->time}}</h5>
+                        <img
+                            src="{{$locationWeather->weather_image}}"
+                            class="card-img-top"
+                            alt="{{$locationWeather->weather_name}}"
+                        />
+                        <div class="card-body">
+                            <h3 class="card-title">{{$locationWeather->weather_name}}</h3>
+                            <p class="card-text">Temperature: {{$locationWeather->temperature}}&deg;C</p>
+                            <p class="card-text">Humidity: {{$locationWeather->humidity}}%</p>
                         </div>
-                        <div class="col-6">
-                            <div id="weatherInfo" class="row">
-                                <div class="card">
-                                    <h5 class="card-title p-2">Weather Info</h5>
-                                    <div class="card-body">
-                                        <p class="card-text">Latitude: {{$locationWeather->latitude}}</p>
-                                        <p class="card-text">Longitude: {{$locationWeather->longitude}}</p>
-                                        <p class="card-text">Country: {{$locationWeather->country}}</p>
-                                        <p class="card-text">Capital: {{$locationWeather->capital}}</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div id="timeData" class="row">
-                                <div class="card">
-                                    <h5 class="card-title p-2">Visits</h5>
-                                    <div class="card-body">
-                                        <canvas id="myChart" width="400" height="400"></canvas>
-                                    </div>
-                                </div>
-                            </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div id="weatherInfo" class="card h-50">
+                        <h5 class="card-title p-2">Weather Info</h5>
+                        <div class="card-body">
+                            <p class="card-text">Latitude: {{$locationWeather->latitude}}</p>
+                            <p class="card-text">Longitude: {{$locationWeather->longitude}}</p>
+                            <p class="card-text">Country: {{$locationWeather->country}}</p>
+                            <p class="card-text">Capital: {{$locationWeather->capital}}</p>
+                        </div>
+                    </div>
+                    <div id="timeData" class="card h-50">
+                        <div class="card-body">
+                            <canvas id="myChart" width="400" height="400"></canvas>
                         </div>
                     </div>
                 </div>
             @else
-                <div class="col-6">
-                    <div class="row">
-                        <div id="weather" class="col-6">
-                            <div class="card">
-                                <h5 class="card-title p-2">Weather</h5>
-
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div id="weatherInfo" class="row">
-                                <div class="card">
-                                    <h5 class="card-title p-2">Weather Info</h5>
-                                </div>
-                            </div>
-                            <div id="timeData" class="row">
-                                <div class="card">
-                                    <h5 class="card-title p-2">Visits</h5>
-                                    <div class="card-body">
-                                        <canvas id="myCharts" width="400" height="400"></canvas>
-                                    </div>
-                                </div>
-                            </div>
+                <div class="col-6 col-md-3">
+                    <div id="weather" class="card h-100">
+                        <h5 class="card-title p-2">Weather</h5>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div id="weatherInfo" class="card h-50">
+                        <h5 class="card-title p-2">Weather Info</h5>
+                    </div>
+                    <div id="timeData" class="card h-50">
+                        <h5 class="card-title p-2">Visits</h5>
+                        <div class="card-body">
+                            <canvas id="myCharts" width="400" height="400"></canvas>
                         </div>
                     </div>
                 </div>
             @endunless
             @unless($locations->isEmpty())
-                <div class="col-6">
-                    <div class="row h-100">
-                        <div id="tableInfo" class="col-12">
-                            <div class="card">
-                                <h5 class="card-title p-2">Flags</h5>
-                                <div class="card-body">
-                                    <table>
-                                        <thead>
-                                        <tr>
-                                            <th>Country</th>
-                                            <th>Flag</th>
-                                            <th>Visitors</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        @foreach($locationsCount as $location)
-                                            <tr>
-                                                <td>{{$location->country}}</td>
-                                                <td>
-                                                    <img
-                                                        src="{{$location->flag}}"
-                                                        class="card-img-top"
-                                                        width="100" height="100"
-                                                        alt="{{$location->country}}"
-                                                    />
-                                                </td>
-                                                <td>{{$location->numVisitors}}</td>
-                                            </tr>
-
-                                        @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
+                <div class="col-12 col-md-6">
+                    <div id="tableInfo" class="card h-100">
+                        <h5 class="card-title p-2">Flags</h5>
+                        <div class="card-body" style="overflow-y: auto; max-height: 500px;">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th>Country</th>
+                                    <th>Flag</th>
+                                    <th>Visitors</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @foreach($locationsCount as $location)
+                                    <tr>
+                                        <td> <a href="/countries/{{$location->country}}">{{$location->country}}</a></td>
+                                        <td>
+                                            <img src="{{$location->flag}}" class="card-img-top img-fluid"
+                                                 alt="{{$location->country}}"
+                                                 style="max-width: 50px; max-height: 50px;"
+                                            />
+                                        </td>
+                                        <td>{{$location->numVisitors}}</td>
+                                    </tr>
+                                @endforeach
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
         </div>
-
         <div class="weather row">
             <div id="mapInfo" class="col">
                 <div class="card">
@@ -218,8 +198,8 @@
         let locations = @json($locations);
 
         let map = new google.maps.Map(document.getElementById('map'), {
-            zoom: 10,
-            center: {lat: 37.7749, lng: -122.4194} // San Francisco coordinates
+            zoom: 7,
+            center: {lat: 48.7749, lng: 17.4194}
         });
 
         for (let i = 0; i < locations.length; i++) {
@@ -278,7 +258,7 @@
 
 </script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAf-phax9JVzpIm91BBxFP-HFM83rnTY9U&callback=initMap"
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCHFUATYlcvJlvVONI5SLUNRcTuVa0jDcY&callback=initMap"
         async defer></script>
 {{--<script src="{{ asset('js/app.js') }}" defer></script>--}}
 </body>

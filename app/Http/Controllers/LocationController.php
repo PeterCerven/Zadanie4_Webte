@@ -19,10 +19,12 @@ class LocationController extends Controller
         $ip = $_SERVER['REMOTE_ADDR'];
         $guest = $this->isNewGuest($ip);
         if ($guest !== null) {
-            $updated_at = Carbon::parse($guest->updated_at);
+            $updated_at = Carbon::parse($guest->created_at);
             if (!$updated_at->isToday()) {
-                $guest->visits++;
-                $guest->update();
+                $newGuest = new Guest();
+                $newGuest->visits = 1;
+                $newGuest->ip = $ip;
+                $newGuest->save();
             }
         } else {
             $newGuest = new Guest();
@@ -53,10 +55,26 @@ class LocationController extends Controller
 
     }
 
+    public function storeCurrent(Request $request)
+    {
+        $ip = $_SERVER['REMOTE_ADDR'];
+        $url = "https://freegeoip.app/json/$ip";
+        $response = file_get_contents($url);
+        $result = json_decode($response, true);
+        $_POST['latitude'] = $result['latitude'];
+        $_POST['longitude'] = $result['longitude'];
+
+
+        $data = $this->locationData($request);
+        $location = Location::create($data);
+        return redirect("./locations/$location->id");
+
+    }
+
     public function show(Location $location)
     {
         $locationsCountByCountry = DB::table('locations')
-            ->select(DB::raw('count(*) as numVisitors, country, flag'))
+            ->select(DB::raw('id, count(*) as numVisitors, country, flag'))
             ->groupBy('country', 'flag')
             ->get();
 
@@ -65,6 +83,20 @@ class LocationController extends Controller
             'locationWeather' => $location,
             'locationsCount' => $locationsCountByCountry,
             'guestFrequency' => Guest::all(),
+        ]);
+    }
+
+    public function countryTable($country)
+    {
+        $locations = DB::table('locations')
+            ->select(DB::raw('count(*) as numVisitors, city, country, flag, id'))
+            ->where('country', $country)
+            ->groupBy('city')
+            ->get();
+
+
+        return view('table', [
+            'locations' => $locations,
         ]);
     }
 

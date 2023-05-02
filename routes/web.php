@@ -18,4 +18,9 @@ Route::get('/', [LocationController::class, 'index']);
 
 Route::post("/locations",[LocationController::class, 'store']);
 
+Route::post("/current",[LocationController::class, 'storeCurrent']);
+
 Route::get("/locations/{location}",[LocationController::class, 'show']);
+
+
+Route::get("/countries/{country}",[LocationController::class, 'countryTable']);
